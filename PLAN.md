@@ -29,7 +29,7 @@ or delete features.
 - [x] Detail screen and navigation
 - [x] Subject-filtered list
 - [x] Unit and UI tests
-- [ ] Optional add/edit/delete bonus, if attempted
+- [x] Optional add/edit/delete bonus, if attempted
 - [x] Local verification and CI review
 
 ## Verification plan
