@@ -35,14 +35,32 @@ final class StudentDetailsViewController: UIViewController {
             make.edges.equalTo(scrollView.contentLayoutGuide).inset(16)
             make.width.equalTo(scrollView.frameLayoutGuide).offset(-32)
         }
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        showStudent()
+    }
+
+    private func showStudent() {
+        contentStack.arrangedSubviews.forEach { $0.removeFromSuperview() }
 
         guard let student = store.students.first(where: { $0.id == studentID }) else {
             title = "Student"
+            navigationItem.rightBarButtonItem = nil
             contentStack.addArrangedSubview(makeLabel("Student not found"))
             return
         }
 
         title = student.name
+        let editButton = UIBarButtonItem(
+            title: "Edit",
+            style: .plain,
+            target: self,
+            action: #selector(editStudent)
+        )
+        editButton.accessibilityIdentifier = "editStudentButton"
+        navigationItem.rightBarButtonItem = editButton
         addAvatar(for: student)
 
         let fields = [
@@ -62,6 +80,11 @@ final class StudentDetailsViewController: UIViewController {
         }
 
         contentStack.addArrangedSubview(makeLabel("Avatar asset: \(student.avatarName)"))
+    }
+
+    @objc private func editStudent() {
+        let form = StudentFormViewController(store: store, mode: .edit(studentID))
+        navigationController?.pushViewController(form, animated: true)
     }
 
     private func addSubjectButton(_ subject: String) {
