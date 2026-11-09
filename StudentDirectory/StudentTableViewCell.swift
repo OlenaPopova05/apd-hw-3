@@ -40,7 +40,6 @@ final class StudentTableViewCell: UITableViewCell {
     }
 
     private func setUpViews() {
-        selectionStyle = .none
         isAccessibilityElement = true
 
         avatarView.contentMode = .scaleAspectFill

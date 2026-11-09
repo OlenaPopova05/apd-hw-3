@@ -1,7 +1,7 @@
 import SnapKit
 import UIKit
 
-final class StudentsViewController: UIViewController, UITableViewDataSource {
+final class StudentsViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
     private let store: StudentStore
     private let tableView = UITableView(frame: .zero, style: .plain)
 
@@ -22,6 +22,7 @@ final class StudentsViewController: UIViewController, UITableViewDataSource {
 
         tableView.accessibilityIdentifier = "studentList"
         tableView.dataSource = self
+        tableView.delegate = self
         tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = 100
         tableView.register(
@@ -52,5 +53,13 @@ final class StudentsViewController: UIViewController, UITableViewDataSource {
 
         cell.configure(with: store.students[indexPath.row])
         return cell
+    }
+
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+
+        let studentID = store.students[indexPath.row].id
+        let details = StudentDetailsViewController(store: store, studentID: studentID)
+        navigationController?.pushViewController(details, animated: true)
     }
 }
