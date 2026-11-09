@@ -3,10 +3,17 @@ import UIKit
 
 final class StudentsViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
     private let store: StudentStore
+    private let subject: String?
     private let tableView = UITableView(frame: .zero, style: .plain)
 
-    init(store: StudentStore) {
+    private var displayedStudents: [Student] {
+        guard let subject else { return store.students }
+        return store.students(matchingSubject: subject)
+    }
+
+    init(store: StudentStore, subject: String? = nil) {
         self.store = store
+        self.subject = subject
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -17,7 +24,7 @@ final class StudentsViewController: UIViewController, UITableViewDataSource, UIT
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        title = "Students"
+        title = subject ?? "Students"
         view.backgroundColor = .systemBackground
 
         tableView.accessibilityIdentifier = "studentList"
@@ -37,7 +44,7 @@ final class StudentsViewController: UIViewController, UITableViewDataSource, UIT
     }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        store.students.count
+        displayedStudents.count
     }
 
     func tableView(
@@ -51,14 +58,14 @@ final class StudentsViewController: UIViewController, UITableViewDataSource, UIT
             return UITableViewCell()
         }
 
-        cell.configure(with: store.students[indexPath.row])
+        cell.configure(with: displayedStudents[indexPath.row])
         return cell
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
 
-        let studentID = store.students[indexPath.row].id
+        let studentID = displayedStudents[indexPath.row].id
         let details = StudentDetailsViewController(store: store, studentID: studentID)
         navigationController?.pushViewController(details, animated: true)
     }

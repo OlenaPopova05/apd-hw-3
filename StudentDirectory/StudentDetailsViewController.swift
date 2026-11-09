@@ -50,11 +50,40 @@ final class StudentDetailsViewController: UIViewController {
             "Name: \(student.name)",
             "Age: \(student.age)",
             "Average grade: \(student.averageGrade)",
-            "Scholarship: \(student.isScholarshipHolder ? "Yes" : "No")",
-            "Subjects: \(student.subjects.joined(separator: ", "))",
-            "Avatar asset: \(student.avatarName)"
+            "Scholarship: \(student.isScholarshipHolder ? "Yes" : "No")"
         ]
         fields.forEach { contentStack.addArrangedSubview(makeLabel($0)) }
+
+        contentStack.addArrangedSubview(makeLabel("Subjects:"))
+        if student.subjects.isEmpty {
+            contentStack.addArrangedSubview(makeLabel("None"))
+        } else {
+            student.subjects.forEach(addSubjectButton)
+        }
+
+        contentStack.addArrangedSubview(makeLabel("Avatar asset: \(student.avatarName)"))
+    }
+
+    private func addSubjectButton(_ subject: String) {
+        let button = UIButton(type: .system)
+        button.setTitle(subject, for: .normal)
+        button.titleLabel?.font = .preferredFont(forTextStyle: .body)
+        button.titleLabel?.adjustsFontForContentSizeCategory = true
+        button.titleLabel?.numberOfLines = 0
+        button.contentHorizontalAlignment = .leading
+        button.accessibilityIdentifier = "subjectButton.\(subject)"
+        button.accessibilityLabel = "Show students studying \(subject)"
+        button.addTarget(self, action: #selector(openSubject(_:)), for: .touchUpInside)
+        contentStack.addArrangedSubview(button)
+        button.snp.makeConstraints { make in
+            make.height.greaterThanOrEqualTo(30)
+        }
+    }
+
+    @objc private func openSubject(_ sender: UIButton) {
+        guard let subject = sender.currentTitle else { return }
+        let filteredList = StudentsViewController(store: store, subject: subject)
+        navigationController?.pushViewController(filteredList, animated: true)
     }
 
     private func addAvatar(for student: Student) {
